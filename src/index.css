@@ -1,85 +1,55 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ── Theme Variables (Space-separated for modern Tailwind) ── */
 :root {
-  --bg: #F1F5F9;
-  --surface: #FFFFFF;
-  --surface2: #F8FAFC;
-  --navy: #0F172A;
-  --navy2: #1E293B;
-  --slate: #475569;
-  --slate2: #64748B;
-  --muted: #94A3B8;
-  --border: #E2E8F0;
-  --blue: #2563EB;
-  --blue-bg: #EFF6FF;
-  --blue-border: #BFDBFE;
-  --green: #059669;
-  --green-bg: #ECFDF5;
-  --green-border: #A7F3D0;
-  --amber: #D97706;
-  --amber-bg: #FFFBEB;
-  --amber-border: #FDE68A;
-  --red: #DC2626;
-  --red-bg: #FEF2F2;
-  --red-border: #FECACA;
-  --purple: #7C3AED;
-  --purple-bg: #F5F3FF;
-  --purple-border: #DDD6FE;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --color-background:    9 9 11;
+  --color-surface:       18 18 20;
+  --color-surface2:      24 24 27;
+  --color-surface3:      39 39 42;
+  --color-border:        39 39 42;
+  --color-primary:       244 244 245;
+  --color-muted:         161 161 170;
+  --color-accent-blue:   59 130 246;
+  --color-accent-green:  16 185 129;
+  --color-accent-amber:  245 158, 11;
+  --color-accent-red:    239 68 68;
 }
 
-html { font-size: 16px; }
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--navy);
-  min-height: 100vh;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+html.light {
+  --color-background:    248 250 252;
+  --color-surface:       255 255 255;
+  --color-surface2:      241 245 249;
+  --color-surface3:      226 232 240;
+  --color-border:        203 213 225;
+  --color-primary:       15 23 42;
+  --color-muted:         100 116 139;
+  --color-accent-blue:   37 99 235;
+  --color-accent-green:  5 150 105;
+  --color-accent-amber:  217 119 6;
+  --color-accent-red:    220 38 38;
 }
 
-button { font-family: inherit; cursor: pointer; }
-input, textarea, select { font-family: inherit; }
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
-
-.mono { font-family: 'JetBrains Mono', monospace; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-primary antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
 }
 
-.fade-up { animation: fadeUp 0.3s ease both; }
-.fade-up-2 { animation: fadeUp 0.3s ease 0.1s both; }
-.fade-up-3 { animation: fadeUp 0.3s ease 0.2s both; }
-.fade-up-4 { animation: fadeUp 0.3s ease 0.3s both; }
-.fade-up-5 { animation: fadeUp 0.3s ease 0.4s both; }
-
-.spinner {
-  width: 16px; height: 16px;
-  border: 2px solid var(--border);
-  border-top-color: var(--blue);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  flex-shrink: 0;
-}
-.spinner-sm {
-  width: 12px; height: 12px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+@layer components {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface3 rounded-full hover:bg-muted/50;
+  }
 }

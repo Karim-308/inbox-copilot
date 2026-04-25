@@ -1,186 +1,164 @@
 import React, { useState, useEffect } from 'react'
-import Setup from './screens/Setup.jsx'
-import Dashboard from './screens/Dashboard.jsx'
-import EmailProcessor from './screens/EmailProcessor.jsx'
-import ClientRecord from './screens/ClientRecord.jsx'
-import { DEFAULT_PRODUCTS, DEFAULT_CLIENTS } from './data.js'
-import { Avatar } from './components.jsx'
-
-const NAV = [
-  { id: 'dashboard', label: 'Pipeline', icon: '📊' },
-  { id: 'processor', label: 'Process Email', icon: '⚡' },
-  { id: 'setup', label: 'Products', icon: '📦' },
-]
-
-function useLocalStorage(key, defaultVal) {
-  const [val, setVal] = useState(() => {
-    try {
-      const stored = localStorage.getItem(key)
-      return stored ? JSON.parse(stored) : defaultVal
-    } catch { return defaultVal }
-  })
-  useEffect(() => {
-    try { localStorage.setItem(key, JSON.stringify(val)) } catch {}
-  }, [key, val])
-  return [val, setVal]
-}
+import { motion, AnimatePresence } from 'framer-motion'
+import { Sun, Moon } from '@phosphor-icons/react'
+import InboxReplica from './screens/InboxReplica.jsx'
+import AdminDashboard from './screens/AdminDashboard.jsx'
+import CopilotSidebar from './components/CopilotSidebar.jsx'
+import AgentPipelineOverlay from './components/AgentPipelineOverlay.jsx'
+import { MOCK_RESPONSES, SAMPLE_EMAILS, DEFAULT_CLIENTS } from './data.js'
 
 export default function App() {
-  const [products, setProducts] = useLocalStorage('isc_products', DEFAULT_PRODUCTS)
-  const [clients, setClients] = useLocalStorage('isc_clients', DEFAULT_CLIENTS)
-  const [screen, setScreen] = useState('dashboard')
-  const [viewingClientId, setViewingClientId] = useState(null)
+  const [view, setView] = useState('inbox') // 'inbox' | 'admin'
+  const [activeEmail, setActiveEmail] = useState(SAMPLE_EMAILS[0])
+  const [processingState, setProcessingState] = useState('idle') // 'idle' | 'processing' | 'done'
+  const [analysisResult, setAnalysisResult] = useState(null)
+  
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'dark'
+  })
 
-  function handleViewClient(id) {
-    setViewingClientId(id)
-    setScreen('client')
-  }
-
-  function handleEmailProcessed({ from, subject, result }) {
-    const now = new Date()
-    const timeStr = 'Just now'
-
-    // Try to find existing client by email
-    const emailMatch = from.match(/<(.+?)>/) || []
-    const emailAddr = emailMatch[1] || from
-
-    const newInteraction = {
-      id: `i_${Date.now()}`,
-      date: timeStr,
-      type: 'inbound',
-      subject: subject || 'Processed Email',
-      summary: result.requirements?.join(', ') || 'Email processed by AI.',
-      classification: result.classification,
-      confidence: result.confidence,
-      recommendation: result.recommended_product || null,
-      status: 'sent'
+  useEffect(() => {
+    const root = window.document.documentElement
+    if (theme === 'light') {
+      root.classList.add('light')
+      root.setAttribute('data-theme', 'light')
+    } else {
+      root.classList.remove('light')
+      root.setAttribute('data-theme', 'dark')
     }
-
-    setClients(prev => {
-      const existing = prev.find(c => c.email === emailAddr)
-      if (existing) {
-        return prev.map(c => c.email === emailAddr ? {
-          ...c,
-          status: 'sent',
-          lastSubject: subject || 'Processed Email',
-          lastContact: 'Just now',
-          interactions: [newInteraction, ...c.interactions]
-        } : c)
-      } else {
-        const newClient = {
-          id: `c_${Date.now()}`,
-          name: result.client_name || 'Unknown Client',
-          company: result.client_company || 'Unknown Company',
-          email: emailAddr,
-          country: '',
-          status: 'sent',
-          lastSubject: subject || 'Processed Email',
-          lastContact: 'Just now',
-          avatar: (result.client_name || 'UC').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
-          avatarColor: '#' + Math.floor(Math.random() * 0xAAAAAA + 0x555555).toString(16),
-          interactions: [newInteraction]
-        }
-        return [newClient, ...prev]
-      }
-    })
-
-    setScreen('dashboard')
+    console.log('Current theme:', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+  
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
+  }
+  const handleProcessEmail = () => {
+    setProcessingState('processing')
   }
 
-  const viewingClient = clients.find(c => c.id === viewingClientId)
+  const handlePipelineComplete = () => {
+    const idx = SAMPLE_EMAILS.findIndex(s => s.body === activeEmail.body)
+    setAnalysisResult(idx !== -1 ? MOCK_RESPONSES[idx] : MOCK_RESPONSES[0])
+    setProcessingState('done')
+  }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* TOP NAVIGATION */}
-      <header style={{
-        background: 'var(--navy)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        position: 'sticky', top: 0, zIndex: 100
-      }}>
-        <div style={{
-          maxWidth: 1200, margin: '0 auto',
-          display: 'flex', alignItems: 'center',
-          padding: '0 32px', height: 56
-        }}>
-          {/* LOGO */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginRight: 40 }}>
-            <div style={{
-              width: 30, height: 30, background: 'var(--blue)',
-              borderRadius: 8, display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontSize: 15
-            }}>⚡</div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', lineHeight: 1 }}>Inbox Sales Copilot</div>
-              <div style={{ fontSize: 10, color: '#475569', marginTop: 1 }}>Look2Innovate Demo</div>
-            </div>
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
+      {/* Top Navigation */}
+      <header className="h-14 border-b border-border bg-surface2 flex items-center justify-between px-6 z-10">
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 bg-accent-blue rounded flex items-center justify-center font-bold text-white shadow-glow-blue">
+            ⚡
           </div>
+          <div>
+            <div className="font-sans font-bold text-sm text-primary leading-tight">Inbox Sales Copilot</div>
+            <div className="font-mono text-[10px] text-muted">Look2Innovate Demo</div>
+          </div>
+        </div>
+        
+        <nav className="flex gap-2">
+          <button 
+            onClick={() => setView('inbox')}
+            className={`px-4 py-1.5 rounded-md font-sans text-sm font-medium transition-all ${view === 'inbox' ? 'bg-surface3 text-primary' : 'text-muted hover:text-primary'}`}
+          >
+            Inbox
+          </button>
+          <button 
+            onClick={() => setView('admin')}
+            className={`px-4 py-1.5 rounded-md font-sans text-sm font-medium transition-all ${view === 'admin' ? 'bg-surface3 text-primary' : 'text-muted hover:text-primary'}`}
+          >
+            Dashboard
+          </button>
+        </nav>
 
-          {/* NAV LINKS */}
-          <nav style={{ display: 'flex', gap: 4 }}>
-            {NAV.map(n => (
-              <button key={n.id} onClick={() => setScreen(n.id)} style={{
-                padding: '6px 14px', borderRadius: 6,
-                background: screen === n.id ? 'rgba(37,99,235,0.2)' : 'transparent',
-                border: screen === n.id ? '1px solid rgba(37,99,235,0.3)' : '1px solid transparent',
-                color: screen === n.id ? '#93C5FD' : '#94A3B8',
-                fontSize: 13, fontWeight: screen === n.id ? 600 : 400,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', fontFamily: 'inherit'
-              }}>
-                <span>{n.icon}</span> {n.label}
-              </button>
-            ))}
-          </nav>
-
-          {/* USER */}
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#E2E8F0' }}>Mina Nagy</div>
-              <div style={{ fontSize: 11, color: '#475569' }}>Sales Engineer</div>
-            </div>
-            <Avatar initials="MN" color="#2563EB" size={32} />
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={toggleTheme}
+            className="w-8 h-8 rounded-full bg-surface3 flex items-center justify-center text-primary hover:bg-border transition-colors"
+          >
+            {theme === 'dark' ? <Sun weight="bold" /> : <Moon weight="bold" />}
+          </button>
+          <div className="text-right border-l border-border pl-4">
+            <div className="text-sm font-bold text-primary">Mina Nagy</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted font-mono">Sales Engineer</div>
+          </div>
+          <div className="w-8 h-8 rounded-full bg-accent-blue flex items-center justify-center text-xs font-bold text-white">
+            MN
           </div>
         </div>
       </header>
 
-      {/* SCREEN CONTENT */}
-      <main style={{ flex: 1 }}>
-        {screen === 'dashboard' && (
-          <Dashboard
-            clients={clients}
-            onProcessEmail={() => setScreen('processor')}
-            onViewClient={handleViewClient}
-          />
-        )}
-        {screen === 'processor' && (
-          <EmailProcessor
-            products={products}
-            clients={clients}
-            onEmailProcessed={handleEmailProcessed}
-          />
-        )}
-        {screen === 'setup' && (
-          <Setup products={products} setProducts={setProducts} />
-        )}
-        {screen === 'client' && (
-          <ClientRecord
-            client={viewingClient}
-            onBack={() => setScreen('dashboard')}
-            onProcessEmail={() => setScreen('processor')}
-          />
-        )}
+      {/* Main Content Area */}
+      <main className="flex-1 relative flex overflow-hidden">
+        <AnimatePresence mode="wait">
+          {view === 'admin' ? (
+            <motion.div 
+              key="admin"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex-1 w-full h-full overflow-y-auto"
+            >
+              <AdminDashboard clients={DEFAULT_CLIENTS} />
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="inbox"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex-1 flex w-full h-full overflow-hidden"
+            >
+              <InboxReplica 
+                activeEmail={activeEmail} 
+                setActiveEmail={(e) => {
+                  setActiveEmail(e)
+                  setProcessingState('idle')
+                  setAnalysisResult(null)
+                }} 
+              />
+              
+              <AnimatePresence>
+                {processingState === 'done' && analysisResult && (
+                  <CopilotSidebar 
+                    result={analysisResult} 
+                    emailBody={activeEmail.body}
+                    onClose={() => setProcessingState('idle')} 
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* Process Float CTA */}
+              <AnimatePresence>
+                {processingState === 'idle' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute bottom-6 right-6 z-20"
+                  >
+                    <button 
+                      onClick={handleProcessEmail}
+                      className="px-6 py-3 bg-accent-blue text-white font-sans font-bold text-sm rounded-md shadow-glow-blue hover:bg-blue-400 transition-all active:scale-95 flex items-center gap-2"
+                    >
+                      <span>Analyze with Copilot</span>
+                      <span className="font-mono bg-white/20 px-2 py-0.5 rounded text-xs">⌘+Enter</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      {/* FOOTER */}
-      <footer style={{
-        borderTop: '1px solid var(--border)',
-        padding: '12px 32px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'var(--surface)', fontSize: 12, color: 'var(--muted)'
-      }}>
-        <span>Inbox Sales Copilot · ITI Capstone · Team 2 · Intake 46</span>
-        <span>Karim Ibrahim, Mohamed Nagy, Mohamed Khaled, Rana Mohamed, Salma Yaser, Abdulrahman Ibrahim</span>
-      </footer>
+      <AnimatePresence>
+        {processingState === 'processing' && (
+          <AgentPipelineOverlay onComplete={handlePipelineComplete} />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
