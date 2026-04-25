@@ -12,8 +12,8 @@ export default function CopilotSidebar({ result, emailBody, onClose }) {
     setDraft('')
     
     try {
-      // Use the provided API Key to generate a live reply.
-      const apiKey = "9a79613074b344a5a5333f0871ff46c5.l4LW6zs3HHKXfHoWVi5psLWe"
+      // Use the provided API Key from environment variables
+      const apiKey = import.meta.env.VITE_ZHIPU_API_KEY
       const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
         method: "POST",
         headers: {
