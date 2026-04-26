@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, WarningCircle, MagicWand, PaperPlaneRight, X, ArrowsClockwise } from '@phosphor-icons/react'
+import { CheckCircle, WarningCircle, MagicWand, PaperPlaneRight, X, ArrowsClockwise, UserCircle, ClockCounterClockwise } from '@phosphor-icons/react'
 
 export default function CopilotSidebar({ result, emailBody, onClose }) {
   const [draft, setDraft] = useState(result.draft_reply)
@@ -115,14 +115,15 @@ export default function CopilotSidebar({ result, emailBody, onClose }) {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
-        
+      {/* Metadata — scrollable top section */}
+      <div className="overflow-y-auto p-5 space-y-4 border-b border-border shrink-0 max-h-[45%]">
+
         {/* Classification & Confidence */}
         <div>
           <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3 font-mono">
             RAG Context & Routing
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <div className="px-2 py-1 bg-surface3 border border-border rounded text-xs font-mono text-primary">
               [{result.client_company}]
             </div>
@@ -132,23 +133,42 @@ export default function CopilotSidebar({ result, emailBody, onClose }) {
           </div>
           <div className="mt-3 flex items-center gap-3">
             <div className="flex-1 h-1.5 bg-surface3 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-accent-green" 
-                style={{ width: `${result.confidence}%` }} 
-              />
+              <div className="h-full bg-accent-green" style={{ width: `${result.confidence}%` }} />
             </div>
-            <div className="text-xs font-mono text-accent-green font-bold">
-              {result.confidence}% Conf.
-            </div>
+            <div className="text-xs font-mono text-accent-green font-bold">{result.confidence}% Conf.</div>
           </div>
         </div>
 
+        {/* CRM Match */}
+        {result.crm_context && (
+          <div className={`rounded-md p-3 border ${result.crm_context.found ? 'border-accent-green/30 bg-accent-green/5' : 'border-border bg-surface2'}`}>
+            <div className="flex items-center gap-2 mb-2">
+              {result.crm_context.found
+                ? <UserCircle weight="fill" className="text-accent-green" size={13} />
+                : <UserCircle weight="regular" className="text-muted" size={13} />}
+              <div className="text-[10px] font-bold uppercase tracking-widest font-mono text-muted">
+                {result.crm_context.found ? 'CRM Match Found' : 'New Contact'}
+              </div>
+            </div>
+            {result.crm_context.found ? (
+              <div className="space-y-1">
+                <div className="text-xs font-sans font-bold text-primary">{result.crm_context.prior_interactions} prior interaction{result.crm_context.prior_interactions !== 1 ? 's' : ''}</div>
+                <div className="flex items-center gap-1.5 text-[11px] font-mono text-muted">
+                  <ClockCounterClockwise size={11} />
+                  <span>{result.crm_context.last_contact} · {result.crm_context.last_subject}</span>
+                </div>
+                <div className="text-[11px] font-sans text-accent-green/90">{result.crm_context.note}</div>
+              </div>
+            ) : (
+              <div className="text-[11px] font-sans text-muted">{result.crm_context.note}</div>
+            )}
+          </div>
+        )}
+
         {/* Extracted Specs */}
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-3 font-mono">
-            Extracted Vectors
-          </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-muted mb-2 font-mono">Extracted Vectors</div>
+          <div className="flex flex-wrap gap-1.5">
             {result.requirements.map((req, i) => (
               <div key={i} className="text-xs font-sans px-2 py-1 bg-surface2 border border-border rounded-sm text-primary/90">
                 {req}
@@ -158,20 +178,13 @@ export default function CopilotSidebar({ result, emailBody, onClose }) {
         </div>
 
         {/* Product Match */}
-        <div className="border border-accent-blue/30 bg-accent-blue/5 rounded-md p-4 relative overflow-hidden">
+        <div className="border border-accent-blue/30 bg-accent-blue/5 rounded-md p-3 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-accent-blue" />
-          <div className="text-[10px] font-bold uppercase tracking-widest text-accent-blue mb-1 font-mono">
-            Primary Match
-          </div>
-          <div className="text-sm font-sans font-bold text-primary mb-2">
-            {result.recommended_product}
-          </div>
-          <div className="text-xs font-sans text-primary/80 leading-relaxed mb-3">
-            {result.recommendation_reason}
-          </div>
-          
+          <div className="text-[10px] font-bold uppercase tracking-widest text-accent-blue mb-1 font-mono">Primary Match</div>
+          <div className="text-sm font-sans font-bold text-primary mb-1">{result.recommended_product}</div>
+          <div className="text-xs font-sans text-primary/80 leading-relaxed">{result.recommendation_reason}</div>
           {result.exclusions?.length > 0 && (
-            <div className="space-y-1 mt-3 pt-3 border-t border-accent-blue/20">
+            <div className="space-y-1 mt-2 pt-2 border-t border-accent-blue/20">
               {result.exclusions.map((exc, i) => (
                 <div key={i} className="flex gap-2 text-xs text-accent-amber font-sans">
                   <WarningCircle weight="fill" className="shrink-0 mt-0.5" />
@@ -181,28 +194,28 @@ export default function CopilotSidebar({ result, emailBody, onClose }) {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Editable Draft */}
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-muted font-mono">
-              Agentic Draft Response
-            </div>
-            <button 
-              onClick={handleRegenerate}
-              disabled={isRegenerating}
-              className="text-xs text-accent-blue hover:text-blue-400 font-sans font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
-            >
-              <ArrowsClockwise weight="bold" className={isRegenerating ? "animate-spin" : ""} />
-              Live Regen
-            </button>
+      {/* Draft — fills remaining height */}
+      <div className="flex-1 flex flex-col min-h-0 p-5">
+        <div className="flex items-center justify-between mb-2 shrink-0">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-muted font-mono">
+            Agentic Draft Response
           </div>
-          <textarea 
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className="w-full h-48 bg-surface2 border border-border rounded-md p-3 text-sm font-sans text-primary/90 leading-relaxed focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue resize-none transition-all"
-          />
+          <button
+            onClick={handleRegenerate}
+            disabled={isRegenerating}
+            className="text-xs text-accent-blue hover:text-blue-400 font-sans font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+          >
+            <ArrowsClockwise weight="bold" className={isRegenerating ? "animate-spin" : ""} />
+            Live Regen
+          </button>
         </div>
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          className="flex-1 min-h-0 w-full bg-surface2 border border-border rounded-md p-3 text-sm font-sans text-primary/90 leading-relaxed focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue resize-none transition-all"
+        />
       </div>
 
       <div className="p-4 border-t border-border bg-surface2 flex gap-3">

@@ -62,11 +62,46 @@ export default function InboxReplica({ activeEmail, setActiveEmail }) {
 
       {/* Pane - Reading View */}
       <div className="flex-1 bg-background flex flex-col overflow-y-auto">
-        <div className="p-8 max-w-3xl">
+        <div className="p-8 max-w-3xl w-full">
           <h2 className="text-2xl font-sans font-bold text-primary mb-6 leading-tight">
             {activeEmail.subject}
           </h2>
-          <div className="flex items-center gap-4 mb-8">
+
+          {/* Prior thread messages */}
+          {activeEmail.thread?.length > 0 && (
+            <div className="mb-6 space-y-4">
+              {activeEmail.thread.map((msg, i) => {
+                const isUs = msg.from.includes('look2innovate')
+                return (
+                  <div key={i} className="border border-border rounded-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-2.5 bg-surface2 border-b border-border">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isUs ? 'bg-accent-blue text-white' : 'bg-surface3 text-primary'}`}>
+                          {msg.from.charAt(0)}
+                        </div>
+                        <div>
+                          <span className="text-xs font-sans font-bold text-primary">{msg.from.split('<')[0].trim()}</span>
+                          {isUs && <span className="ml-2 text-[10px] font-mono text-accent-blue bg-accent-blue/10 px-1.5 py-0.5 rounded">You</span>}
+                        </div>
+                      </div>
+                      <div className="font-mono text-[10px] text-muted">{msg.date}</div>
+                    </div>
+                    <div className="px-4 py-3 text-sm font-sans text-primary/80 leading-relaxed whitespace-pre-wrap">
+                      {msg.body}
+                    </div>
+                  </div>
+                )
+              })}
+              <div className="flex items-center gap-3 text-[10px] font-mono text-muted">
+                <div className="flex-1 h-px bg-border" />
+                <span>NEW MESSAGE</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            </div>
+          )}
+
+          {/* Current email */}
+          <div className="flex items-center gap-4 mb-6">
             <div className="w-10 h-10 rounded-full bg-surface3 flex items-center justify-center font-bold text-primary">
               {activeEmail.from.charAt(0)}
             </div>
@@ -78,11 +113,11 @@ export default function InboxReplica({ activeEmail, setActiveEmail }) {
                 {`<${activeEmail.from.split('<')[1] || activeEmail.from}`}
               </div>
             </div>
-            <div className=" ml-auto font-mono text-xs text-muted">
+            <div className="ml-auto font-mono text-xs text-muted">
               Today, 9:00 AM (2 hours ago)
             </div>
           </div>
-          
+
           <div className="font-sans text-sm text-primary/90 leading-relaxed whitespace-pre-wrap">
             {activeEmail.body}
           </div>

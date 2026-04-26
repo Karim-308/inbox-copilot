@@ -4,7 +4,8 @@ import { motion } from 'framer-motion'
 const AGENTS = [
   { id: 'classifier', label: 'Intent Classifier', desc: 'Analyzing semantics & urgency' },
   { id: 'extractor', label: 'Spec Extractor', desc: 'Parsing technical constraints' },
-  { id: 'matcher', label: 'RAG Matcher', desc: 'Querying vector database' },
+  { id: 'matcher', label: 'RAG Matcher', desc: 'Querying knowledge base' },
+  { id: 'crm', label: 'CRM Lookup', desc: 'Searching client history & prior threads' },
   { id: 'composer', label: 'Draft Composer', desc: 'Generating contextual reply' },
   { id: 'supervisor', label: 'Quality Supervisor', desc: 'Verifying hallucination & tone' },
 ]
@@ -88,11 +89,12 @@ export default function AgentPipelineOverlay({ onComplete }) {
                         animate={{ opacity: 1, height: 'auto' }}
                         className="mt-3 p-2 bg-surface2 border border-border rounded text-[10px] text-accent-blue font-mono whitespace-pre-wrap overflow-hidden"
                       >
-                        {idx === 0 && "> Extracting text embeddings...\n> Matching local context window..."}
-                        {idx === 1 && "> NLP sweep for entities...\n> Found: [50 players, outdoor, RJ45, PoE]"}
-                        {idx === 2 && "> Vector similarity search (k=3)...\n> Look2Innovate DPA-4 found (score: 0.94)"}
-                        {idx === 3 && "> Injecting RAG context...\n> Generating personalized response..."}
-                        {idx === 4 && "> Cross-referencing technical specs...\n> No hallucinations detected. Passing."}
+                        {idx === 0 && "> Tokenizing email content...\n> Classification: product_inquiry (conf: 0.93)"}
+                        {idx === 1 && "> NLP entity extraction...\n> Found: [200 devices, IR trigger, Arabic/EN/FR, 8h battery]"}
+                        {idx === 2 && "> Vector similarity search (k=5)...\n> Style Audio Guide matched (score: 0.97)\n> Trend Audio Guide (score: 0.71) — excluded"}
+                        {idx === 3 && "> Querying CRM index...\n> Match found: Dr. Sarah Whitfield · British Museum\n> 4 prior interactions · Closed deal Jun 2023 · 180 units\n> Status: existing client — support case"}
+                        {idx === 4 && "> Injecting RAG + CRM context...\n> Drafting personalized response..."}
+                        {idx === 5 && "> Cross-referencing technical specs...\n> No hallucinations detected. Passing."}
                         <span className="cursor-blink ml-1 block mt-1 w-2 h-3 bg-accent-blue" />
                       </motion.div>
                     )}

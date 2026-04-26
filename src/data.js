@@ -38,6 +38,64 @@ export const DEFAULT_PRODUCTS = [
 
 export const DEFAULT_CLIENTS = [
   {
+    id: 'c_bm',
+    name: 'Dr. Sarah Whitfield',
+    company: 'The British Museum',
+    email: 's.whitfield@britishmuseum.org',
+    country: 'UK',
+    status: 'closed_won',
+    lastSubject: 'Re: Style Audio Guide fleet — maintenance & support query',
+    lastContact: 'Today',
+    avatar: 'SW',
+    avatarColor: '#6366f1',
+    interactions: [
+      {
+        id: 'ibm1',
+        date: 'Feb 3, 2023',
+        type: 'inbound',
+        subject: 'Initial inquiry — 180-device audio guide fleet',
+        summary: 'Referred by V&A. Needs auto-triggering, 5 languages (EN/FR/DE/JA/ZH), 180 exhibit points across 4 floors.',
+        classification: 'product_inquiry',
+        confidence: 94,
+        recommendation: 'Style Audio Guide',
+        status: 'sent'
+      },
+      {
+        id: 'ibm2',
+        date: 'Mar 15, 2023',
+        type: 'inbound',
+        subject: 'Purchase approved — 180 units',
+        summary: 'Board approved procurement. Client confirmed order for 180 Style Audio Guides. Proposal and deployment timeline requested.',
+        classification: 'follow_up',
+        confidence: 99,
+        recommendation: null,
+        status: 'sent'
+      },
+      {
+        id: 'ibm3',
+        date: 'Jun 12, 2023',
+        type: 'outbound',
+        subject: 'Deployment complete — all 180 units live',
+        summary: 'All 180 units deployed and calibrated across 4 floors. IR emitters signed off. All languages confirmed. Deal closed.',
+        classification: null,
+        confidence: null,
+        recommendation: null,
+        status: 'sent'
+      },
+      {
+        id: 'ibm4',
+        date: 'Today',
+        type: 'inbound',
+        subject: 'Maintenance request — IR failures + battery drain',
+        summary: 'IR triggering failures in Roman Gallery (Floor 2). 4 devices with severe battery drain (~3h). Requesting maintenance SLA discussion.',
+        classification: 'support',
+        confidence: 96,
+        recommendation: 'Maintenance SLA & On-Site Service',
+        status: 'draft_ready'
+      }
+    ]
+  },
+  {
     id: 'c1',
     name: 'Ahmed Hassan',
     company: 'Luxor Museum of Ancient Egyptian Art',
@@ -198,132 +256,107 @@ export const DEFAULT_CLIENTS = [
 ]
 
 export const MOCK_RESPONSES = [
-  // Luxor Museum — Style Audio Guide
+  // British Museum — Maintenance support request
   {
-    classification: 'product_inquiry',
-    confidence: 93,
-    client_name: 'Ahmed Hassan',
-    client_company: 'Luxor Museum of Ancient Egyptian Art',
+    classification: 'support',
+    confidence: 96,
+    client_name: 'Dr. Sarah Whitfield',
+    client_company: 'The British Museum',
+    crm_context: {
+      found: true,
+      client_id: 'c_bm',
+      prior_interactions: 4,
+      last_contact: '8 months ago',
+      last_subject: 'Re: Deployment complete — 180 units live',
+      note: 'Closed deal Apr 2023 · 180 Style units · Deployment signed off June 2023 · No contact since. Flag for renewal + SLA upsell.'
+    },
     requirements: [
-      '3 exhibition floors, ~120 exhibit points',
-      'Automatic proximity triggering (no manual input)',
-      'Arabic, English, and French language support',
-      'Minimum 8-hour battery life per day',
-      'No video synchronization required',
-      'Fleet of approximately 200 devices'
+      '180 Style Audio Guides deployed since June 2023',
+      'IR triggering failures on Floor 2 — Roman Gallery (3 IR boxes unresponsive)',
+      '4 devices showing abnormal battery drain (full charge lasting ~3h instead of 8h+)',
+      'Requesting maintenance SLA / support contract',
+      'Needs on-site diagnostic visit within 2 weeks'
     ],
-    recommended_product: 'Style Audio Guide',
-    recommendation_reason: 'The Style Audio Guide is the ideal fit for Luxor Museum\'s scale and requirements. It supports automatic IR and RF proximity triggering across all 120 exhibit points with zero visitor interaction needed, and covers Arabic, English, French, and up to 29 additional languages out of the box. With 100+ hours of battery life and a modular charging system optimized for 100+ device fleets, it is purpose-built for exactly this deployment size.',
+    recommended_product: 'Maintenance SLA & On-Site Service',
+    recommendation_reason: 'This is a post-deployment support case for an existing 180-unit Style fleet. The IR triggering failure on Floor 2 is consistent with IR emitter misalignment or firmware drift after extended use — both are resolved by an on-site calibration visit. The battery drain on 4 devices points to cell degradation on the older units, which are eligible for battery replacement under the extended service plan. Recommending a Priority Support SLA to cover this visit and provide ongoing coverage for the fleet.',
     exclusions: [
-      'Look3 Tablet — overkill for audio-only deployment; video sync features are not required and add unnecessary cost',
-      'Trend Audio Guide — supports the same triggering and languages but lacks the fleet management and analytics capabilities that a 200-device permanent exhibition demands',
-      'Twister Headset Guide — all-in-one design is well-suited for smaller venues, less appropriate for a 200-device flagship institution',
-      'SyncBox — not applicable; video synchronization was explicitly excluded from requirements'
+      'Hardware replacement — premature before diagnostics; IR misalignment and battery issues are typically resolved without replacing units',
+      'Remote firmware update only — IR emitter issues require physical realignment on-site; remote update alone will not resolve triggering failures'
     ],
-    draft_reply: `Dear Ahmed,
+    draft_reply: `Dear Sarah,
 
-Thank you for reaching out regarding your visitor experience modernization project at the Luxor Museum of Ancient Egyptian Art. We are delighted to support such a prestigious institution.
+Thank you for getting in touch — and for the kind words about the system over these past two years. It is always great to hear the guides have been performing well for your visitors.
 
-Based on your requirements — 200 devices, automatic proximity triggering across 120 exhibit points, Arabic/English/French support, and full-day battery autonomy — we recommend the Style Audio Guide.
+Based on what you have described, I want to address both issues directly:
 
-Here is why it is the right fit:
+IR triggering failures on Floor 2 (Roman Gallery):
+The pattern you are seeing — 3 IR boxes unresponsive — is almost certainly an emitter alignment issue rather than a hardware fault. After 18+ months of use, vibration from visitor traffic and seasonal temperature changes can shift the emitter angle enough to break the detection arc. This is fully correctable with an on-site calibration visit, typically resolved within a half-day.
 
-• Automatic IR and RF triggering: visitors simply approach each exhibit and audio plays instantly — no buttons, no codes.
-• Language support: Arabic, English, and French are all included, with capacity for up to 32 languages total.
-• Battery: 100+ hours of continuous playback — no daily charging required during operating hours.
-• Fleet scale: the Style is engineered for 100+ device deployments with a modular charging dock system and centralized content management.
-• Analytics: built-in visitor engagement tracking at each exhibit point.
+Battery drain on 4 devices:
+A drop from 8+ hours to ~3 hours is consistent with Li-ion cell degradation in the oldest units of the fleet. These are eligible for battery replacement under our extended service plan — not a full device swap.
 
-For a 200-device permanent exhibition deployment, we would be happy to prepare a detailed commercial proposal including hardware, installation support, and a content loading service.
+My recommendation:
+I would like to arrange an on-site visit from our technical team within the next two weeks to run a full diagnostic on the Roman Gallery IR setup and the 4 affected devices. I will also put together a Priority Support SLA proposal for you — this covers two on-site visits per year, remote firmware management, and a 48-hour replacement unit guarantee for any device failures.
 
-Could we schedule a brief call this week to discuss timelines and next steps?
+Could you share your availability for a brief call this week so we can confirm the visit date?
 
 Warm regards,
 The Sales Team
 Look2Innovate`
   },
 
-  // Palais de la Découverte — Look3 + SyncBox
+  // Vienna Konzerthaus — Twister Headset Guide
   {
     classification: 'product_inquiry',
     confidence: 91,
-    client_name: 'Sophie Laurent',
-    client_company: 'Palais de la Découverte',
+    client_name: 'Elena Vasquez',
+    client_company: 'Vienna Konzerthaus',
+    crm_context: {
+      found: false,
+      client_id: null,
+      prior_interactions: 0,
+      last_contact: null,
+      last_subject: null,
+      note: 'New contact. No prior record in CRM.'
+    },
     requirements: [
-      'Synchronization with 24 video screens across exhibition',
-      'French and English language support',
-      '150 devices for visitor use',
-      'Auto-play when visitors approach each station',
-      'Integration with existing AV/show controller infrastructure'
+      '400 attendees per concert night — backstage & venue tour',
+      'Hands-free audio guide — no device to hold separately from headset',
+      'Self-service at entrance: visitors pick up and go independently',
+      'High audio quality for music context',
+      'Multiple triggering modes (RF or manual — no fixed IR infrastructure)',
+      'English, German, and Japanese language support',
+      'Easy sanitization and turnover between shows'
     ],
-    recommended_product: 'Look3 Tablet',
-    recommendation_reason: 'The Look3 Tablet combined with SyncBox is the definitive solution for Palais de la Découverte\'s video-synchronized science hall. The Look3 uses precision IR automatic triggering (10 cm accuracy) with no WiFi dependency, and its video synchronization engine — paired with SyncBox — fires real-time timestamp commands to each of the 24 external video screens the moment a visitor approaches. The 7000 mAh battery provides two-day autonomy on a 150-device fleet, and its 5.5" HD touchscreen supports rich interactive content alongside the video sync.',
+    recommended_product: 'Twister Headset Guide',
+    recommendation_reason: 'The Twister Headset Guide is the natural fit for a high-volume concert venue tour. Its all-in-one design — headset and guide combined in a single unit — means visitors pick it up at the entrance and are immediately ready with no separate device to manage, which is critical for a 400-person throughput. The hands-free form factor is ideal for a concert hall context where visitors want to move freely and focus on the experience. RF and manual triggering modes work without requiring IR emitter infrastructure, keeping the deployment clean and non-invasive to the venue.',
     exclusions: [
-      'Style Audio Guide — excellent for audio-only deployments but does not natively drive video screen synchronization without SyncBox; Look3 is the stronger primary device for video-first installations',
-      'Trend Audio Guide — does not support video synchronization; unsuitable for this deployment',
-      'Twister Headset Guide — audio-only, no video sync capability'
+      'Style Audio Guide — requires visitors to carry a separate handheld device alongside headphones; poor fit for a concert experience focused on immersion',
+      'Trend Audio Guide — handheld device with manual keypad; not suitable for a high-throughput self-service concert tour',
+      'Look3 Tablet — touchscreen tablet form factor is intrusive in a concert environment; video sync features are irrelevant here',
+      'SyncBox — not applicable; no video synchronization requirement'
     ],
-    draft_reply: `Dear Sophie,
+    draft_reply: `Dear Elena,
 
-Thank you for sharing the details of the Palais de la Découverte redesign — synchronizing visitor audio guides with 24 live video screens is exactly the kind of immersive experience our technology is built for.
+Thank you for reaching out — a backstage tour of the Vienna Konzerthaus is exactly the kind of premium visitor experience our Twister Headset Guide was designed for.
 
-We recommend the Look3 Tablet paired with SyncBox for your science hall.
+We recommend the Twister Headset Guide for your concert night tours.
 
-How it works:
-• Look3 Tablet (×150): Android-based multimedia guide with precision IR automatic triggering. When a visitor approaches a station, the device detects proximity within 10 cm — no WiFi, no manual input — and triggers both the audio content on the device and a sync signal to the corresponding video screen simultaneously.
-• SyncBox: installed at each of your 24 video stations, the SyncBox receives real-time timestamp commands from the Look3 and synchronizes your video screen content frame-accurately with the visitor's audio playback.
+Why it is the right fit:
 
-Key specs for your deployment:
-• Languages: French and English (and up to 30 additional languages if required in the future)
-• Battery: 7000 mAh — two-day autonomy, minimizing midday charging interruptions
-• Screen: 5.5" HD touchscreen for interactive content alongside the video experience
-• Charging: magnetic pogo-pin modular docking
+All-in-one, no separate device: the Twister combines the audio guide and headset into a single unit. Visitors pick it up at the entrance and are ready instantly — no pairing, no second device, no fumbling. For 400 attendees per night moving through a high-energy concert environment, this is essential.
 
-We would love to walk your AV team through a technical demo of the video sync workflow. Shall we arrange a call with our integration engineer?
+Hands-free by design: visitors keep both hands free throughout the tour. The guide stays on their head, out of the way, while they move through backstage corridors, stage wings, and the main hall.
 
-Best regards,
-The Sales Team
-Look2Innovate`
-  },
+Self-service deployment: the Twister is designed specifically for high-traffic, self-service venues. Your front-of-house team can set up a collection point at the entrance — visitors take a unit, the tour begins. No staff-assisted pairing or configuration required.
 
-  // Cairo Gallery — Trend Audio Guide
-  {
-    classification: 'product_inquiry',
-    confidence: 89,
-    client_name: 'Omar Khalil',
-    client_company: 'Cairo Private Art Gallery',
-    requirements: [
-      '40 artworks across two rooms',
-      'Manual keypad input (number-press playback)',
-      'Arabic and English language support',
-      'Full-day battery without recharging',
-      'Maximum 30 devices',
-      'Simple, low-cost setup'
-    ],
-    recommended_product: 'Trend Audio Guide',
-    recommendation_reason: 'The Trend Audio Guide is a perfect match for a compact private gallery deployment. It is specifically designed for manual keypad number-press playback — visitors type the exhibit number and the corresponding audio plays immediately — which is exactly what Omar described. At 30 devices, its low operational footprint and 100-hour battery mean no charging infrastructure is needed during gallery hours. It supports Arabic and English natively and is the most cost-effective device in our lineup for a gallery of this scale.',
-    exclusions: [
-      'Style Audio Guide — automatic triggering and fleet analytics are unnecessary features for a 30-device manual setup; adds cost without benefit',
-      'Look3 Tablet — video sync and touchscreen features are beyond the scope of a simple audio guide deployment',
-      'Twister Headset Guide — all-in-one headset format is better suited for high-traffic venues; over-specified for a small private gallery',
-      'SyncBox — not applicable; no video synchronization required'
-    ],
-    draft_reply: `Dear Omar,
+Language support: English, German, and Japanese can all be loaded simultaneously. Visitors select their language at the start.
 
-Thank you for reaching out — we work with galleries of all sizes and are happy to recommend the right fit for your space.
+Triggering: RF triggering works without installing IR emitter boxes throughout the venue — the RF signal is broadcast per zone, keeping your backstage spaces completely unobtrusive.
 
-For your 40-artwork gallery with 30 devices and a straightforward manual playback experience, we recommend the Trend Audio Guide.
+Turnover between shows: the Twister is designed for rapid cycling. The units can be collected, sanitized, and recharged in the interval between performances.
 
-Why it is the right choice:
-• Manual keypad playback: visitors press the number of the artwork they are standing in front of — simple, intuitive, no learning curve.
-• Arabic and English: both languages are included as standard; you can load content for both and visitors select their preferred language at startup.
-• Battery: 100 hours of continuous playback — your devices will run the full gallery day without any midday charging.
-• Storage: up to 1000 hours of audio content, more than enough for 40 artworks in two languages with room to grow.
-• Low operational cost: no triggering infrastructure to install, no WiFi dependency, minimal maintenance.
-
-For 30 devices at this scale, setup is straightforward — we can have your system ready for visitors within days of delivery.
-
-Would you like us to prepare a quote? We can also arrange for a sample unit to be shipped so your team can evaluate the experience before committing.
+I would love to arrange a demonstration unit so your team can evaluate the experience before committing. Would a visit to your venue work, or would you prefer we ship a trial set?
 
 Best regards,
 The Sales Team
@@ -333,59 +366,74 @@ Look2Innovate`
 
 export const SAMPLE_EMAILS = [
   {
-    label: 'Luxor Museum — Product Inquiry',
-    from: 'Ahmed Hassan <ahmed.hassan@luxormuseum.eg>',
-    subject: 'Audio Guide System Inquiry — Luxor Museum',
-    body: `Dear Team,
+    label: 'British Museum — Maintenance Request',
+    from: 'Dr. Sarah Whitfield <s.whitfield@britishmuseum.org>',
+    subject: 'Re: Style Audio Guide fleet — maintenance & support query',
+    thread: [
+      {
+        from: 'Dr. Sarah Whitfield <s.whitfield@britishmuseum.org>',
+        date: 'Feb 3, 2023 · 10:18 AM',
+        body: `Dear Mina,\n\nWe are currently tendering for an audio guide system for our permanent collection and have been referred to Look2Innovate by colleagues at the V&A. We have approximately 180 exhibit points across 4 floors and require automatic triggering, multilingual support (EN, FR, DE, JA, ZH), and a robust fleet management solution.\n\nCould we arrange a call to discuss further?\n\nDr. Sarah Whitfield\nHead of Visitor Experience, The British Museum`
+      },
+      {
+        from: 'Mina Nagy <mina.nagy@look2innovate.com>',
+        date: 'Feb 3, 2023 · 2:05 PM',
+        body: `Dear Sarah,\n\nThank you for reaching out — a referral from the V&A is high praise and we are delighted to be considered.\n\nBased on your brief, the Style Audio Guide would be our recommendation: automatic IR and RF triggering, all five languages natively supported, and a fleet management dashboard purpose-built for 100+ device deployments. I have attached the full technical datasheet.\n\nI am available Monday or Wednesday this week for a call — please let me know what suits.\n\nBest regards,\nMina Nagy\nSales Engineer, Look2Innovate`
+      },
+      {
+        from: 'Dr. Sarah Whitfield <s.whitfield@britishmuseum.org>',
+        date: 'Mar 15, 2023 · 9:44 AM',
+        body: `Mina,\n\nFollowing our calls and the on-site demo last week — the board has approved the procurement. We would like to proceed with 180 units of the Style Audio Guide. Please send over the formal proposal and timeline for deployment.\n\nSarah`
+      },
+      {
+        from: 'Mina Nagy <mina.nagy@look2innovate.com>',
+        date: 'Jun 12, 2023 · 4:30 PM',
+        body: `Dear Sarah,\n\nDelighted to confirm that all 180 units are now live across all four floors. The IR emitter calibration on floors 1–4 has been signed off by our technical team and your content team has confirmed audio playback across all languages.\n\nIt has been a pleasure working with you on this. Do not hesitate to reach out if anything comes up — we are always here.\n\nWarm regards,\nMina Nagy`
+      }
+    ],
+    body: `Dear Mina,
 
-I am the Facilities Director at the Luxor Museum of Ancient Egyptian Art. We are planning to modernize our visitor experience and are considering a professional audio guide system for our permanent collection.
+I hope you are well. It has been a while — the guides have been running beautifully and our visitors love them.
 
-Our requirements are as follows:
-- We have 3 exhibition floors with approximately 120 exhibit points
-- We require automatic triggering at each exhibit — visitors should not need to press anything
-- Multilingual support is essential: Arabic, English, and French at minimum
-- Battery life should cover a full visitor day (8 hours minimum)
-- We do not need video synchronization
-- We are looking at a fleet of approximately 200 devices
+I am writing because we have started experiencing a couple of issues over the past few weeks that I wanted to flag before they become a bigger problem:
 
-Could you recommend the most appropriate system from your lineup and provide a rough pricing estimate for this scale of deployment?
+1. IR triggering failures on Floor 2 (Roman Gallery): three of the IR boxes in that wing have become intermittently unresponsive. Visitors are having to press the manual override, which defeats the purpose. The issue seems to have appeared after the heating system maintenance in that corridor.
+
+2. Battery drain on 4 devices: four of our units are now only lasting around 3 hours on a full charge. Given we open at 9am and close at 6pm, this is causing us to pull them from circulation mid-day.
+
+We have been very happy with the system overall, but I think we need to discuss a maintenance agreement going forward. We are approaching two years of daily use and I suspect some level of wear is expected.
+
+Could you advise on next steps and what a support contract might look like?
 
 Best regards,
-Ahmed Hassan
-Facilities Director, Luxor Museum of Ancient Egyptian Art`
+Dr. Sarah Whitfield
+Head of Visitor Experience, The British Museum`
   },
   {
-    label: 'Science Museum — Video Sync Inquiry',
-    from: 'Sophie Laurent <s.laurent@palaisdecouverte.fr>',
-    subject: 'Audio guide with video sync — Palais de la Découverte',
+    label: 'Vienna Konzerthaus — Concert Tour Headsets',
+    from: 'Elena Vasquez <e.vasquez@konzerthaus.at>',
+    subject: 'Audio headset guide for concert venue tours — 400 visitors/night',
+    thread: [],
     body: `Hello,
 
-I am the Digital Experience Manager at Palais de la Découverte in Paris. We are redesigning our main science hall and want to integrate audio guides that synchronize with our new video screens at each exhibit station.
+My name is Elena Vasquez, Events & Operations Manager at the Vienna Konzerthaus. We are launching a new experience this season: a guided backstage and venue tour that runs on concert nights for up to 400 attendees per show.
 
-We need:
-- Synchronization between the audio guide and 24 video screens across the exhibition
-- French and English language support
-- Around 150 devices for visitor use
-- Content auto-play when visitors approach each station
+We are looking for an audio guide solution that fits this specific context:
 
-Could you advise on the best solution?
+- The tour is entirely on foot — visitors need both hands free. A separate handheld device alongside headphones is not workable.
+- Visitors collect the guide themselves at the entrance. We cannot have staff pairing or configuring devices individually for 400 people.
+- The environment is a working concert hall — no fixed triggering infrastructure can be installed backstage or in the wings. We need something that works with RF or manual triggering.
+- Audio quality matters more than usual — our audience is music lovers and they will notice.
+- Languages: English, German, and Japanese (our Japanese touring groups are a significant segment).
+- Turnover needs to be fast — we may have two tour groups on the same evening.
+
+We have looked at several options on the market but nothing has felt purpose-built for this kind of high-throughput, hands-free, concert context.
+
+Could you advise on whether you have a product that fits?
 
 Best regards,
-Sophie Laurent`
-  },
-  {
-    label: 'Small Gallery — Simple Setup',
-    from: 'Omar Khalil <ok@cairo-gallery.com>',
-    subject: 'Small gallery audio guide — 30 devices',
-    body: `Hi,
-
-We run a small private art gallery in Cairo and are interested in adding an audio guide to improve our visitor experience. We have around 40 artworks across two rooms.
-
-We need something simple — visitors can press a number to hear about each artwork. No fancy triggering needed. Arabic and English. Around 30 devices maximum, and we need them to last the full day without charging.
-
-What would you recommend for our size?
-
-Omar Khalil
-Gallery Director`
+Elena Vasquez
+Events & Operations Manager
+Vienna Konzerthaus`
   }
 ]

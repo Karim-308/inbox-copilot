@@ -5,13 +5,14 @@ import InboxReplica from './screens/InboxReplica.jsx'
 import AdminDashboard from './screens/AdminDashboard.jsx'
 import CopilotSidebar from './components/CopilotSidebar.jsx'
 import AgentPipelineOverlay from './components/AgentPipelineOverlay.jsx'
-import { MOCK_RESPONSES, SAMPLE_EMAILS, DEFAULT_CLIENTS } from './data.js'
+import { MOCK_RESPONSES, SAMPLE_EMAILS, DEFAULT_CLIENTS, DEFAULT_PRODUCTS } from './data.js'
 
 export default function App() {
   const [view, setView] = useState('inbox') // 'inbox' | 'admin'
   const [activeEmail, setActiveEmail] = useState(SAMPLE_EMAILS[0])
   const [processingState, setProcessingState] = useState('idle') // 'idle' | 'processing' | 'done'
   const [analysisResult, setAnalysisResult] = useState(null)
+  const [products, setProducts] = useState(DEFAULT_PRODUCTS)
   
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('theme') || 'dark'
@@ -100,7 +101,7 @@ export default function App() {
               exit={{ opacity: 0, y: -10 }}
               className="flex-1 w-full h-full overflow-y-auto"
             >
-              <AdminDashboard clients={DEFAULT_CLIENTS} />
+              <AdminDashboard clients={DEFAULT_CLIENTS} products={products} setProducts={setProducts} />
             </motion.div>
           ) : (
             <motion.div 
